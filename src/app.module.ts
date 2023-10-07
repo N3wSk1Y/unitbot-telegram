@@ -3,6 +3,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { BotModule } from "./bot/bot.module";
 import { TelegrafModule } from "nestjs-telegraf";
+import { UserModule } from "./user/user.module";
 
 @Module({
     imports: [
@@ -33,6 +34,7 @@ import { TelegrafModule } from "nestjs-telegraf";
             inject: [ConfigService],
         }),
         BotModule,
+        UserModule,
     ],
 })
 export class AppModule {}
