@@ -6,6 +6,8 @@ import { TelegrafModule } from "nestjs-telegraf";
 import { UserModule } from "./user/user.module";
 import { session } from "telegraf";
 import { PromotionModule } from "./promotion/promotion.module";
+import { TradeInModule } from "./trade-in/trade-in.module";
+import { LocalFileModule } from "./local-file/local-file.module";
 
 @Module({
     imports: [
@@ -39,6 +41,8 @@ import { PromotionModule } from "./promotion/promotion.module";
         BotModule,
         UserModule,
         PromotionModule,
+        TradeInModule,
+        LocalFileModule,
     ],
 })
 export class AppModule {}
