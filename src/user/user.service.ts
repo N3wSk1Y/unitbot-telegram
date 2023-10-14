@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
-import { User } from "./user.entity";
+import { User, UserRole } from "./user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { BotUpdate } from "../bot/bot.update";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -16,6 +16,14 @@ export class UserService {
 
     async getAll(): Promise<User[]> {
         return await this.userRepository.find();
+    }
+
+    async getAllManagers(): Promise<User[]> {
+        return await this.userRepository.find({
+            where: {
+                role: UserRole.Manager,
+            },
+        });
     }
 
     async getOneByTelegramId(id: number): Promise<User> {

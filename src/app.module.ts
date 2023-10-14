@@ -4,6 +4,8 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { BotModule } from "./bot/bot.module";
 import { TelegrafModule } from "nestjs-telegraf";
 import { UserModule } from "./user/user.module";
+import { session } from "telegraf";
+import { PromotionModule } from "./promotion/promotion.module";
 
 @Module({
     imports: [
@@ -30,11 +32,13 @@ import { UserModule } from "./user/user.module";
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) => ({
                 token: configService.get<string>("TELEGRAM_BOT_TOKEN"),
+                middlewares: [session()],
             }),
             inject: [ConfigService],
         }),
         BotModule,
         UserModule,
+        PromotionModule,
     ],
 })
 export class AppModule {}

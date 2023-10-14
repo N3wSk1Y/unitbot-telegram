@@ -1,8 +1,14 @@
-import { Command, Ctx, Message, Start, Update } from "nestjs-telegraf";
+import { Action, Command, Ctx, On, Start, Update } from "nestjs-telegraf";
 import { Context } from "telegraf";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { UserService } from "../user/user.service";
 import { BotService } from "./bot.service";
+import * as startResponse from "./common/start.response.json";
+import * as tt from "telegraf/src/telegram-types";
+import { SceneContext } from "telegraf/typings/scenes";
+import { SupportService } from "./support/support.service";
+import { CallType } from "./support/support-call.entity";
+import { PromotionService } from "../promotion/promotion.service";
 
 @Update()
 @Injectable()
@@ -11,8 +17,12 @@ export class BotUpdate {
         @Inject(forwardRef(() => UserService))
         private readonly userService: UserService,
         @Inject(forwardRef(() => BotService))
-        private readonly botService: BotService
+        private readonly botService: BotService,
+        private readonly supportService: SupportService,
+        @Inject(forwardRef(() => PromotionService))
+        private readonly promotionService: PromotionService
     ) {}
+
     @Start()
     async start(@Ctx() ctx: Context) {
         const user = ctx.from;
@@ -22,49 +32,83 @@ export class BotUpdate {
             firstName: user.first_name,
             lastName: user.last_name,
         });
-        await ctx.reply("<b>Выберите интересующий вас раздел:</b>", {
-            parse_mode: "HTML",
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Каталог",
-                            web_app: { url: "https://telegaads.ru/" },
-                        },
-                    ],
-                    [
-                        {
-                            text: "Мой профиль",
-                            web_app: { url: "https://telegaads.ru/" },
-                        },
-                    ],
-                    [
-                        {
-                            text: "Мои заказы",
-                            web_app: { url: "https://telegaads.ru/" },
-                        },
-                    ],
-                ],
-            },
-        });
+        await ctx.reply(
+            startResponse.text,
+            startResponse.options as tt.ExtraReplyMessage
+        );
+    }
+
+    @Action("BUTTON_PROMOTIONS")
+    async promotionsButtonHandler(@Ctx() ctx: Context) {
+        await ctx.answerCbQuery();
+        await this.promotionService.sendAll(ctx.from.id);
+    }
+
+    @Action("BUTTON_TRADE_IN")
+    async tradeInButtonHandler(@Ctx() ctx: SceneContext) {
+        await ctx.answerCbQuery();
+        await ctx.scene.enter(`SCENE_TRADE_IN`);
     }
 
     @Command("massmail")
-    async massMail(@Message() message: any, @Ctx() ctx: Context) {
-        const rawMessage = message.text;
-        if (rawMessage.split(" ").length < 2) {
-            await ctx.reply("Введите текст для рассылки.");
-        } else {
-            const argument = rawMessage
-                .slice(rawMessage.indexOf(" ") + 1)
-                .trim();
-            await this.botService.emitMassMailing(argument);
-        }
+    async massMail(@Ctx() ctx: SceneContext) {
+        await ctx.scene.enter("SCENE_MASS_MAILING");
+    }
+
+    @Command("addpromotion")
+    async addPromotion(@Ctx() ctx: SceneContext) {
+        await ctx.scene.enter("SCENE_ADD_PROMOTION");
     }
 
     @Command("getusers")
     async getUsers(@Ctx() ctx: Context) {
         const message = await this.botService.getAllUsersMessage();
-        await ctx.reply(message);
+        await ctx.reply(message, { parse_mode: "HTML" });
+    }
+
+    @Command("chatinfo")
+    async getChatInfo(@Ctx() ctx: Context) {
+        await ctx.reply(`ID: <code>${ctx.chat.id}</code>`, {
+            parse_mode: "HTML",
+        });
+    }
+
+    @Action("BUTTON_SUPPORT")
+    async supportButtonHandler(@Ctx() ctx: SceneContext) {
+        await this.supportService.createCall(ctx.from.id, CallType.Support);
+        await ctx.answerCbQuery();
+        await ctx.scene.enter(`SCENE_SUPPORT_CLIENT`);
+    }
+
+    @On("callback_query")
+    async takeCallButtonHandler(@Ctx() ctx: SceneContext) {
+        const callbackQuery = (ctx.callbackQuery as any).data;
+        if (!callbackQuery.includes("BUTTON_TAKE_CALL_")) {
+            await ctx.answerCbQuery();
+            return;
+        }
+
+        const callId = parseInt(
+            callbackQuery.slice(callbackQuery.lastIndexOf("_") + 1)
+        );
+        const call = await this.supportService.getCallById(callId);
+
+        if (call == null) {
+            await ctx.answerCbQuery("Обращение уже обработано.");
+            return;
+        }
+        if (
+            (await this.supportService.getCallByManager(ctx.from.id)) !== null
+        ) {
+            await ctx.answerCbQuery("У вас уже есть обращение в обработке.");
+            return;
+        }
+        if (call.manager !== null) {
+            await ctx.answerCbQuery("Обращение уже в обработке.");
+            return;
+        }
+
+        await this.supportService.attachManagerToCall(ctx.from.id, callId);
+        await ctx.scene.enter(`SCENE_SUPPORT_MANAGER`);
     }
 }

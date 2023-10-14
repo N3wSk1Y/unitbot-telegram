@@ -12,11 +12,28 @@ export class BotService {
         private readonly bot: Telegraf
     ) {}
 
-    async emitMassMailing(message: string): Promise<void> {
+    async emitMassMailing(
+        messageId: number,
+        fromChatId: number
+    ): Promise<void> {
         const users = await this.userService.getAll();
         for (const user of users) {
-            await this.bot.telegram.sendMessage(user.id, message);
+            await this.bot.telegram.copyMessage(user.id, fromChatId, messageId);
         }
+    }
+
+    async sendMessage(chatId: number, message: string, options?: any) {
+        if (options) {
+            await this.bot.telegram.sendMessage(chatId, message, options);
+        } else {
+            await this.bot.telegram.sendMessage(chatId, message, {
+                parse_mode: "HTML",
+            });
+        }
+    }
+
+    async copyMessage(chatId: number, fromChatId: number, messageId: number) {
+        await this.bot.telegram.copyMessage(chatId, fromChatId, messageId);
     }
 
     async getAllUsersMessage(): Promise<string> {
@@ -29,6 +46,6 @@ export class BotService {
                 user.firstName
             }${" ".repeat(25 - user.firstName.length)}${user.lastName}\n`;
         }
-        return table;
+        return `<code>${table}</code>`;
     }
 }

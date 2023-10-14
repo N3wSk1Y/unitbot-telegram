@@ -1,0 +1,17 @@
+{
+    "text": "<b>Подбираем свободного менеджера...</b>",
+    "options": {
+        "parse_mode": "HTML",
+        "reply_markup": {
+            "inline_keyboard": [
+                [
+                    {
+                        "text": "\uD83C\uDFC1 Завершить диалог с менеджером",
+                        "callback_data": "BUTTON_FINISH_CALL"
+                    }
+                ]
+            ]
+        }
+    }
+}
+

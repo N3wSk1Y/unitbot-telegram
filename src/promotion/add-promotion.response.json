@@ -1,0 +1,17 @@
+{
+    "text": "<b>Отправьте сообщение-акцию.\nПри удалении сообщения, акция будет удалена.</b>",
+    "options": {
+        "parse_mode": "HTML",
+        "reply_markup": {
+            "inline_keyboard": [
+                [
+                    {
+                        "text": "❌ Отмена",
+                        "callback_data": "BUTTON_MAIN_MENU"
+                    }
+                ]
+            ]
+        }
+    }
+}
+
