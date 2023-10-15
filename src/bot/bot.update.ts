@@ -4,6 +4,7 @@ import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { UserService } from "../user/user.service";
 import { BotService } from "./bot.service";
 import * as startResponse from "./common/start.response.json";
+import * as adminResponse from "./common/admin.response.json";
 import * as tt from "telegraf/src/telegram-types";
 import { SceneContext } from "telegraf/typings/scenes";
 import { SupportService } from "./support/support.service";
@@ -60,10 +61,13 @@ export class BotUpdate {
         await ctx.scene.enter("SCENE_ADD_PROMOTION");
     }
 
-    @Command("getusers")
-    async getUsers(@Ctx() ctx: Context) {
-        const message = await this.botService.getAllUsersMessage();
-        await ctx.reply(message, { parse_mode: "HTML" });
+    @Command("admin")
+    async adminButtonHandler(@Ctx() ctx: Context) {
+        await this.botService.sendMessage(
+            ctx.from.id,
+            adminResponse.text,
+            adminResponse.options
+        );
     }
 
     @Command("chatinfo")
