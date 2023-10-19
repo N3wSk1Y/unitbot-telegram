@@ -19,6 +19,9 @@ export class TradeInService {
             relations: {
                 files: true,
             },
+            order: {
+                description: "ASC"
+            }
         });
     }
 
