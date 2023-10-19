@@ -7,13 +7,13 @@
                 [
                     {
                         "text": "Список пользователей",
-                        "web_app": { "url": "https://xn--h1ajq9b.store/admin/users" }
+                        "web_app": { "url": "https://xn--h1ajq9b.store/webapp/admin/users" }
                     }
                 ],
                 [
                     {
                         "text": "Добавить товар в ReUse",
-                        "web_app": { "url": "https://xn--h1ajq9b.store/admin/reuse" }
+                        "web_app": { "url": "https://xn--h1ajq9b.store/webapp/admin/reuse" }
                     }
                 ]
             ]

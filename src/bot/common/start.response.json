@@ -13,13 +13,13 @@
                 [
                     {
                         "text": "\uD83D\uDDC2\uFE0F Новая техника",
-                        "web_app": { "url": "https://xn--h1ajq9b.store/" }
+                        "web_app": { "url": "https://xn--h1ajq9b.store/webapp/webapp/" }
                     }
                 ],
                 [
                     {
                         "text": "\uD83D\uDCF1 ReUse",
-                        "web_app": { "url": "https://xn--h1ajq9b.store/reuse" }
+                        "web_app": { "url": "https://xn--h1ajq9b.store/webapp/webapp/reuse" }
                     }
                 ],
                 [
@@ -31,7 +31,7 @@
                 [
                     {
                         "text": "\uD83D\uDC64 Мой профиль",
-                        "web_app": { "url": "https://xn--h1ajq9b.store/profile" }
+                        "web_app": { "url": "https://xn--h1ajq9b.store/webapp/profile" }
                     }
                 ],
                 [
