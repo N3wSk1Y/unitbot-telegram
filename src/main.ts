@@ -4,11 +4,12 @@ import { ValidationPipe } from "@nestjs/common";
 import * as cookieParser from "cookie-parser";
 import * as compression from "compression";
 import helmet from "helmet";
-import * as process from "process";
+import * as morgan from "morgan";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     app.use(compression());
+    app.use(morgan("dev"));
     app.use(
         helmet({
             crossOriginEmbedderPolicy: false,

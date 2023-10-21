@@ -20,8 +20,8 @@ export class TradeInService {
                 files: true,
             },
             order: {
-                description: "ASC"
-            }
+                description: "ASC",
+            },
         });
     }
 
