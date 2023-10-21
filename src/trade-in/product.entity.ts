@@ -1,5 +1,6 @@
 import {
     Column,
+    CreateDateColumn,
     Entity,
     JoinTable,
     ManyToMany,
@@ -22,4 +23,7 @@ export class Product {
     @ManyToMany(() => LocalFile)
     @JoinTable()
     files: LocalFile[];
+
+    @CreateDateColumn()
+    date: Date;
 }

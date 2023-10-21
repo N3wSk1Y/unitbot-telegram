@@ -20,7 +20,7 @@ export class TradeInService {
                 files: true,
             },
             order: {
-                description: "ASC",
+                date: "DESC",
             },
         });
     }

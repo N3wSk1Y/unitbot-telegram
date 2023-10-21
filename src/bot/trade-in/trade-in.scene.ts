@@ -6,11 +6,16 @@ import { SceneContext } from "telegraf/typings/scenes";
 import * as tradeInResponse from "./trade-in.response.json";
 import * as tt from "telegraf/src/telegram-types";
 import * as process from "process";
+import { CallType } from "../support/support-call.entity";
+import { SupportService } from "../support/support.service";
 
 @Scene("SCENE_TRADE_IN")
 @Injectable()
 export class TradeInScene {
-    public constructor(private readonly botService: BotService) {}
+    public constructor(
+        private readonly botService: BotService,
+        private readonly supportService: SupportService
+    ) {}
     @SceneEnter()
     async enterScene(@Ctx() ctx: Context) {
         await ctx.reply(
@@ -36,6 +41,8 @@ ${message.text}`
             parse_mode: "HTML",
         });
         await ctx.scene.leave();
+        await this.supportService.createCall(ctx.from.id, CallType.TradeIn);
+        await ctx.scene.enter(`SCENE_SUPPORT_CLIENT`);
     }
 
     @Action("BUTTON_MAIN_MENU")
