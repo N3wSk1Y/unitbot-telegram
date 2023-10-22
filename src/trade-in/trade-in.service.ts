@@ -9,6 +9,7 @@ import { BotService } from "../bot/bot.service";
 import { UserService } from "../user/user.service";
 import { Telegraf } from "telegraf";
 import { InjectBot } from "nestjs-telegraf";
+import * as process from "process";
 
 @Injectable()
 export class TradeInService {
@@ -63,7 +64,7 @@ export class TradeInService {
         const product = await this.getOne(productId);
         const user = await this.userService.getOneByTelegramId(userid);
         await this.botService.sendMessage(
-            -4006452105,
+            parseInt(process.env.SUPPORT_CHAT_ID),
             `
 <b>Заявка на бронирование товара</b>
 ======================
