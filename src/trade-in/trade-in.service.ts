@@ -10,6 +10,7 @@ import { UserService } from "../user/user.service";
 import { Telegraf } from "telegraf";
 import { InjectBot } from "nestjs-telegraf";
 import * as process from "process";
+import { CheckoutDto } from "./dto/checkout.dto";
 
 @Injectable()
 export class TradeInService {
@@ -59,7 +60,60 @@ export class TradeInService {
     }
 
     // Оформление заказа
+    async checkout(userid: number, checkoutData: CheckoutDto): Promise<void> {
+        const user = await this.userService.getOneByTelegramId(userid);
+        await this.botService.sendMessage(
+            parseInt(process.env.SUPPORT_CHAT_ID),
+            `
+<b>Завяка на оформление заказа</b>
+======================
+            
+<b>Состав заказа:</b> 
+${checkoutData.products}
 
+<b>Стоимость заказа:</b> ${checkoutData.total} рублей.
+<b>Способ оплаты:</b> ${checkoutData.paymentMethod}.
+<b>Способ получения:</b> ${checkoutData.obtainingMethod}.
+
+${checkoutData.address}
+======================
+
+${checkoutData.comment}
+            }`
+        );
+        await this.bot.telegram.sendMessage(
+            user.id,
+            `
+<b>Оформление заказа</b>
+======================
+            
+<b>Состав заказа:</b> 
+${checkoutData.products}
+
+<b>Стоимость заказа:</b> ${checkoutData.total} рублей.
+<b>Способ оплаты:</b> ${checkoutData.paymentMethod}.
+<b>Способ получения:</b> ${checkoutData.obtainingMethod}.
+
+${checkoutData.address}
+======================
+
+${checkoutData.comment}
+`,
+            {
+                parse_mode: "HTML",
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Продолжить оформление",
+                                callback_data: `BUTTON_SUPPORT`,
+                            },
+                        ],
+                    ],
+                },
+            }
+        );
+    }
     async bookProduct(userid: number, productId: number): Promise<void> {
         const product = await this.getOne(productId);
         const user = await this.userService.getOneByTelegramId(userid);
@@ -71,9 +125,10 @@ export class TradeInService {
             
 <b>Пользователь:</b> @${user.username}
 <b>Товар:</b> ${product.description}
+
 ${
     product.files.length > 0
-        ? `<a href="https://xn--h1ajq9b.store/api/file/${product.files[0].id}">.</a>`
+        ? `<a href="https://xn--h1ajq9b.store/api/file/${product.files[0].id}">Медиа</a>`
         : ""
 }`
         );
@@ -84,9 +139,10 @@ ${
 ======================
             
 <b>Товар:</b> ${product.description}
+
 ${
     product.files.length > 0
-        ? `<a href="https://xn--h1ajq9b.store/api/file/${product.files[0].id}">.</a>`
+        ? `<a href="https://xn--h1ajq9b.store/api/file/${product.files[0].id}">Медиа</a>`
         : ""
 }`,
             {

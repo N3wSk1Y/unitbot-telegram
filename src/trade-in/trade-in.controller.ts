@@ -12,6 +12,7 @@ import { TradeInService } from "./trade-in.service";
 import { Product } from "./product.entity";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { LocalFileInterceptor } from "../interceptors/local-file.interceptor";
+import { CheckoutDto } from "./dto/checkout.dto";
 
 @Controller("product")
 export class TradeInController {
@@ -78,5 +79,13 @@ export class TradeInController {
         @Param("userId") userId: number
     ): Promise<void> {
         await this.tradeInService.bookProduct(userId, productId);
+    }
+
+    @Post("/checkout/:id")
+    async checkout(
+        @Param("id") userId: number,
+        @Body() checkoutData: CheckoutDto
+    ): Promise<void> {
+        await this.tradeInService.checkout(userId, checkoutData);
     }
 }
