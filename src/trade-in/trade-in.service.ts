@@ -69,13 +69,13 @@ export class TradeInService {
 <b>Заявка на бронирование товара</b>
 ======================
             
-<b>Пользователь:</b> @${user.id}
+<b>Пользователь:</b> @${user.username}
 <b>Товар:</b> ${product.description}
 ${
     product.files.length > 0
         ? `<a href="https://xn--h1ajq9b.store/api/file/${product.files[0].id}">.</a>`
         : ""
-}\``
+}`
         );
         await this.bot.telegram.sendMessage(
             user.id,
