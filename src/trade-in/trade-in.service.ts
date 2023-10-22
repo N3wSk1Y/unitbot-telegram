@@ -9,7 +9,7 @@ import { BotService } from "../bot/bot.service";
 import { UserService } from "../user/user.service";
 import { Telegraf } from "telegraf";
 import { InjectBot } from "nestjs-telegraf";
-import process from "process";
+import * as process from "process";
 
 @Injectable()
 export class TradeInService {
