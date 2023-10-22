@@ -66,6 +66,8 @@ export class TradeInService {
             parseInt(process.env.SUPPORT_CHAT_ID),
             `
 <b>Завяка на оформление заказа</b>
+${user.firstName || ""} ${user.lastName || ""} | ${checkoutData.phoneNumber}
+
 ======================
             
 <b>Состав заказа:</b> 
@@ -85,6 +87,8 @@ ${checkoutData.comment}
             user.id,
             `
 <b>Оформление заказа</b>
+${user.firstName || ""} ${user.lastName || ""} | ${checkoutData.phoneNumber}
+
 ======================
             
 <b>Состав заказа:</b> 
