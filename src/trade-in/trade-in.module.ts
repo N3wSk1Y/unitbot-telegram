@@ -4,9 +4,11 @@ import { TradeInController } from "./trade-in.controller";
 import { LocalFileModule } from "../local-file/local-file.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Product } from "./product.entity";
+import {BotModule} from "../bot/bot.module";
+import {UserModule} from "../user/user.module";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Product]), LocalFileModule],
+    imports: [TypeOrmModule.forFeature([Product]), LocalFileModule, BotModule, UserModule],
     providers: [TradeInService],
     controllers: [TradeInController],
 })
