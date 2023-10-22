@@ -80,8 +80,7 @@ ${checkoutData.products}
 ${checkoutData.address}
 ======================
 
-${checkoutData.comment}
-            }`
+${checkoutData.comment || ""}`
         );
         await this.bot.telegram.sendMessage(
             user.id,
@@ -101,7 +100,7 @@ ${checkoutData.products}
 ${checkoutData.address}
 ======================
 
-${checkoutData.comment}
+${checkoutData.comment || ""}
 `,
             {
                 parse_mode: "HTML",
