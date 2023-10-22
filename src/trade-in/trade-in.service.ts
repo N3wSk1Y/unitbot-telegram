@@ -5,13 +5,22 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { CreateProductDto } from "./dto/create-product.dto";
 import { LocalFileDto } from "../local-file/dto/local-file.dto";
 import { LocalFileService } from "../local-file/local-file.service";
+import { BotService } from "../bot/bot.service";
+import { UserService } from "../user/user.service";
+import { Telegraf } from "telegraf";
+import { InjectBot } from "nestjs-telegraf";
+import process from "process";
 
 @Injectable()
 export class TradeInService {
     public constructor(
         @InjectRepository(Product)
         private readonly productRepository: Repository<Product>,
-        private readonly localFileService: LocalFileService
+        private readonly localFileService: LocalFileService,
+        private readonly botService: BotService,
+        private readonly userService: UserService,
+        @InjectBot()
+        private readonly bot: Telegraf
     ) {}
 
     async getAll(): Promise<Product[]> {
@@ -47,5 +56,52 @@ export class TradeInService {
 
     async delete(id: number): Promise<void> {
         await this.productRepository.delete({ id });
+    }
+
+    // Оформление заказа
+
+    async bookProduct(userid: number, productId: number): Promise<void> {
+        const product = await this.getOne(productId);
+        const user = await this.userService.getOneByTelegramId(userid);
+        await this.botService.sendMessage(
+            parseInt(process.env.SUPPORT_CHAT_ID),
+            `
+<b>Заявка на бронирование товара</b>
+======================
+            
+<b>Пользователь:</b> @${user.id}
+<b>Товар:</b> ${product.description}
+${
+    product.files.length > 0
+        ? `<a href="https://xn--h1ajq9b.store/api/file/${product.files[0].id}">.</a>`
+        : ""
+}\``
+        );
+        await this.bot.telegram.sendMessage(
+            user.id,
+            `
+<b>Заявка на бронирование товара</b>
+======================
+            
+<b>Товар:</b> ${product.description}
+${
+    product.files.length > 0
+        ? `<a href="https://xn--h1ajq9b.store/api/file/${product.files[0].id}">.</a>`
+        : ""
+}`,
+            {
+                parse_mode: "HTML",
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Продолжить бронирование",
+                                callback_data: `BUTTON_SUPPORT`,
+                            },
+                        ],
+                    ],
+                },
+            }
+        );
     }
 }

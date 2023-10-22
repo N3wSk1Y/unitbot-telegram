@@ -70,4 +70,13 @@ export class TradeInController {
     async deleteOne(@Param("id") id: number): Promise<void> {
         await this.tradeInService.delete(id);
     }
+
+    // Оформление заказа
+    @Post(":productId/book/:userId")
+    async bookProduct(
+        @Param("productId") productId: number,
+        @Param("userId") userId: number
+    ): Promise<void> {
+        await this.tradeInService.bookProduct(userId, productId);
+    }
 }
