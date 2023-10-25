@@ -20,6 +20,11 @@ export class Product {
     })
     description: string;
 
+    @Column({
+        default: 0,
+    })
+    category: number;
+
     @ManyToMany(() => LocalFile)
     @JoinTable()
     files: LocalFile[];

@@ -35,6 +35,11 @@ export class TradeInController {
         return await this.tradeInService.create(productData);
     }
 
+    @Post("remind/:id")
+    async remindArrival(@Param("id") id: number): Promise<void> {
+        return await this.tradeInService.remindArrival(id);
+    }
+
     @Post(":id/file")
     @UseInterceptors(
         LocalFileInterceptor({

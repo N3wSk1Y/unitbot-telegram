@@ -59,6 +59,27 @@ export class TradeInService {
         await this.productRepository.delete({ id });
     }
 
+    async remindArrival(id: number): Promise<void> {
+        const user = await this.userService.getOneByTelegramId(id);
+        await this.bot.telegram.sendMessage(
+            user.id,
+            `<b>Напоминание о товаре</b>`,
+            {
+                parse_mode: "HTML",
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Продолжить оформление",
+                                callback_data: `BUTTON_SUPPORT`,
+                            },
+                        ],
+                    ],
+                },
+            }
+        );
+    }
+
     // Оформление заказа
     async checkout(userid: number, checkoutData: CheckoutDto): Promise<void> {
         const user = await this.userService.getOneByTelegramId(userid);
@@ -66,7 +87,9 @@ export class TradeInService {
             parseInt(process.env.SUPPORT_CHAT_ID),
             `
 <b>Завяка на оформление заказа</b>
-${user.firstName || ""} ${user.lastName || ""} | ${checkoutData.phoneNumber} | @${user.username}
+${user.firstName || ""} ${user.lastName || ""} | ${
+                checkoutData.phoneNumber
+            } | @${user.username}
 
 ======================
             
@@ -86,7 +109,9 @@ ${checkoutData.comment || ""}`
             user.id,
             `
 <b>Оформление заказа</b>
-${user.firstName || ""} ${user.lastName || ""} | ${checkoutData.phoneNumber} | @${user.username}
+${user.firstName || ""} ${user.lastName || ""} | ${
+                checkoutData.phoneNumber
+            } | @${user.username}
 
 ======================
             
