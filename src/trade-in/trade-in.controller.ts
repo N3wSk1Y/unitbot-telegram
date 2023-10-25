@@ -28,6 +28,11 @@ export class TradeInController {
         return await this.tradeInService.getOne(id);
     }
 
+    @Get("/category/:id")
+    async getOneByCategory(@Param("id") id: number): Promise<Product[]> {
+        return await this.tradeInService.getAllByCategory(id);
+    }
+
     @Post()
     async createProduct(
         @Body() productData: CreateProductDto

@@ -35,6 +35,20 @@ export class TradeInService {
         });
     }
 
+    async getAllByCategory(id: number): Promise<Product[]> {
+        return await this.productRepository.find({
+            where: {
+                category: id,
+            },
+            relations: {
+                files: true,
+            },
+            order: {
+                date: "DESC",
+            },
+        });
+    }
+
     async getOne(id: number): Promise<Product> {
         return await this.productRepository.findOne({
             where: { id },
