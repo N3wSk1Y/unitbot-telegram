@@ -77,14 +77,14 @@ export class TradeInService {
         const user = await this.userService.getOneByTelegramId(id);
         await this.bot.telegram.sendMessage(
             user.id,
-            `<b>Напоминание о товаре</b>`,
+            `<b>Оставить заявку на уведомление о появлении товара в наличии</b>`,
             {
                 parse_mode: "HTML",
                 reply_markup: {
                     inline_keyboard: [
                         [
                             {
-                                text: "Продолжить оформление",
+                                text: "Продолжить оформление заявки",
                                 callback_data: `BUTTON_SUPPORT`,
                             },
                         ],
