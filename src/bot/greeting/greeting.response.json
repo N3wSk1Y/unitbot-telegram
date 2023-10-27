@@ -1,0 +1,17 @@
+{
+    "text": "<b>Отправьте сообщение для установки в качестве приветствия.\nНЕ Удаляйте сообщение в диалоге с ботом!</b>",
+    "options": {
+        "parse_mode": "HTML",
+        "reply_markup": {
+            "inline_keyboard": [
+                [
+                    {
+                        "text": "❌ Отмена",
+                        "callback_data": "BUTTON_MAIN_MENU"
+                    }
+                ]
+            ]
+        }
+    }
+}
+

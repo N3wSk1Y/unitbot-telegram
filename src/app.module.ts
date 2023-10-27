@@ -8,6 +8,7 @@ import { session } from "telegraf";
 import { PromotionModule } from "./promotion/promotion.module";
 import { TradeInModule } from "./trade-in/trade-in.module";
 import { LocalFileModule } from "./local-file/local-file.module";
+import { GreetingModule } from "./greeting/greeting.module";
 
 @Module({
     imports: [
@@ -43,6 +44,7 @@ import { LocalFileModule } from "./local-file/local-file.module";
         PromotionModule,
         TradeInModule,
         LocalFileModule,
+        GreetingModule,
     ],
 })
 export class AppModule {}

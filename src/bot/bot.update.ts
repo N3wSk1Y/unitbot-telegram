@@ -1,15 +1,18 @@
 import { Action, Command, Ctx, On, Start, Update } from "nestjs-telegraf";
 import { Context } from "telegraf";
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable, UseGuards } from "@nestjs/common";
 import { UserService } from "../user/user.service";
 import { BotService } from "./bot.service";
 import * as startResponse from "./common/start.response.json";
 import * as adminResponse from "./common/admin.response.json";
+import * as contactsResponse from "./common/contacts.response.json";
 import * as tt from "telegraf/src/telegram-types";
 import { SceneContext } from "telegraf/typings/scenes";
 import { SupportService } from "./support/support.service";
 import { CallType } from "./support/support-call.entity";
 import { PromotionService } from "../promotion/promotion.service";
+import { AdminGuard } from "../guards/admin.guard";
+import { GreetingService } from "../greeting/greeting.service";
 
 @Update()
 @Injectable()
@@ -21,7 +24,8 @@ export class BotUpdate {
         private readonly botService: BotService,
         private readonly supportService: SupportService,
         @Inject(forwardRef(() => PromotionService))
-        private readonly promotionService: PromotionService
+        private readonly promotionService: PromotionService,
+        private readonly greetingService: GreetingService
     ) {}
 
     @Start()
@@ -33,6 +37,20 @@ export class BotUpdate {
             firstName: user.first_name,
             lastName: user.last_name,
         });
+        const greeting = await this.greetingService.get();
+        await this.botService.copyMessage(
+            user.id,
+            greeting.fromChatId,
+            greeting.messageId
+        );
+        await ctx.reply(
+            startResponse.text,
+            startResponse.options as tt.ExtraReplyMessage
+        );
+    }
+
+    @Command("menu")
+    async menu(@Ctx() ctx: Context) {
         await ctx.reply(
             startResponse.text,
             startResponse.options as tt.ExtraReplyMessage
@@ -51,6 +69,15 @@ export class BotUpdate {
         await ctx.scene.enter(`SCENE_TRADE_IN`);
     }
 
+    @Action("BUTTON_CONTACTS")
+    async contactsButtonHandler(@Ctx() ctx: SceneContext) {
+        await ctx.answerCbQuery();
+        await ctx.reply(
+            contactsResponse.text,
+            contactsResponse.options as tt.ExtraReplyMessage
+        );
+    }
+
     @Command("massmail")
     async massMail(@Ctx() ctx: SceneContext) {
         await ctx.scene.enter("SCENE_MASS_MAILING");
@@ -62,12 +89,19 @@ export class BotUpdate {
     }
 
     @Command("admin")
+    // @UseGuards(AdminGuard)
     async adminButtonHandler(@Ctx() ctx: Context) {
         await this.botService.sendMessage(
             ctx.from.id,
             adminResponse.text,
             adminResponse.options
         );
+    }
+
+    @Command("changegreeting")
+    // @UseGuards(AdminGuard)
+    async changeGreetingButtonHandler(@Ctx() ctx: SceneContext) {
+        await ctx.scene.enter("SCENE_SET_GREETING");
     }
 
     @Command("chatinfo")

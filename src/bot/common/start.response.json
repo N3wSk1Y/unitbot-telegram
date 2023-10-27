@@ -39,6 +39,12 @@
                         "text": "\uD83D\uDCD9 Связаться с поддержкой",
                         "callback_data": "BUTTON_SUPPORT"
                     }
+                ],
+                [
+                    {
+                        "text": "\uD83C\uDF0E Наши контакты",
+                        "callback_data": "BUTTON_CONTACTS"
+                    }
                 ]
             ]
         }

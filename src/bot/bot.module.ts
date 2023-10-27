@@ -11,12 +11,15 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { SupportCall } from "./support/support-call.entity";
 import { PromotionScene } from "../promotion/promotion.scene";
 import { PromotionModule } from "../promotion/promotion.module";
+import { GreetingModule } from "../greeting/greeting.module";
+import { GreetingScene } from "./greeting/greeting.scene";
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([SupportCall]),
         forwardRef(() => UserModule),
         forwardRef(() => PromotionModule),
+        GreetingModule,
     ],
     providers: [
         BotService,
@@ -27,6 +30,7 @@ import { PromotionModule } from "../promotion/promotion.module";
         SupportClientScene,
         SupportManagerScene,
         PromotionScene,
+        GreetingScene,
     ],
     exports: [BotUpdate, BotService],
 })
