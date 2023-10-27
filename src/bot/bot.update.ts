@@ -37,12 +37,15 @@ export class BotUpdate {
             firstName: user.first_name,
             lastName: user.last_name,
         });
-        const greeting = await this.greetingService.get();
-        await this.botService.copyMessage(
-            user.id,
-            greeting.fromChatId,
-            greeting.messageId
-        );
+        try {
+            const greeting = await this.greetingService.get();
+            await this.botService.copyMessage(
+                user.id,
+                greeting.fromChatId,
+                greeting.messageId
+            );
+        } catch (e) {}
+
         await ctx.reply(
             startResponse.text,
             startResponse.options as tt.ExtraReplyMessage
