@@ -1,4 +1,4 @@
-import { Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Message } from "./message.entity";
 import { User } from "../../user/user.entity";
 
@@ -10,6 +10,7 @@ export class Chat {
     id: string;
 
     @OneToOne(() => User)
+    @JoinColumn()
     target: User;
 
     @OneToMany(() => Message, (message) => message.chat)
