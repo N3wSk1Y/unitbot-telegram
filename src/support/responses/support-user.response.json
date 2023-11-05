@@ -7,7 +7,7 @@
                 [
                     {
                         "text": "\uD83C\uDFC1 Завершить диалог с менеджером",
-                        "callback_data": "BUTTON_FINISH_CALL"
+                        "callback_data": "BUTTON_QUIT_SUPPORT"
                     }
                 ]
             ]

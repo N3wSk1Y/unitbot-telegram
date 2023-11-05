@@ -1,6 +1,6 @@
-import { Action, Command, Ctx, On, Start, Update } from "nestjs-telegraf";
+import { Action, Command, Ctx, Start, Update } from "nestjs-telegraf";
 import { Context } from "telegraf";
-import { forwardRef, Inject, Injectable, UseGuards } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { UserService } from "../user/user.service";
 import { BotService } from "./bot.service";
 import * as startResponse from "./common/start.response.json";
@@ -8,11 +8,9 @@ import * as adminResponse from "./common/admin.response.json";
 import * as contactsResponse from "./common/contacts.response.json";
 import * as tt from "telegraf/src/telegram-types";
 import { SceneContext } from "telegraf/typings/scenes";
-import { SupportService } from "./support/support.service";
-import { CallType } from "./support/support-call.entity";
 import { PromotionService } from "../promotion/promotion.service";
-import { AdminGuard } from "../guards/admin.guard";
 import { GreetingService } from "../greeting/greeting.service";
+import { SupportService } from "../support/support.service";
 
 @Update()
 @Injectable()
@@ -22,6 +20,7 @@ export class BotUpdate {
         private readonly userService: UserService,
         @Inject(forwardRef(() => BotService))
         private readonly botService: BotService,
+        @Inject(forwardRef(() => SupportService))
         private readonly supportService: SupportService,
         @Inject(forwardRef(() => PromotionService))
         private readonly promotionService: PromotionService,
@@ -102,7 +101,6 @@ export class BotUpdate {
     }
 
     @Command("changegreeting")
-    // @UseGuards(AdminGuard)
     async changeGreetingButtonHandler(@Ctx() ctx: SceneContext) {
         await ctx.scene.enter("SCENE_SET_GREETING");
     }
@@ -116,40 +114,10 @@ export class BotUpdate {
 
     @Action("BUTTON_SUPPORT")
     async supportButtonHandler(@Ctx() ctx: SceneContext) {
-        await this.supportService.createCall(ctx.from.id, CallType.Support);
+        await this.supportService.sendUserMessage(ctx.from.id, {
+            text: "<b>Новое обращение в поддержку</b>",
+        });
         await ctx.answerCbQuery();
-        await ctx.scene.enter(`SCENE_SUPPORT_CLIENT`);
-    }
-
-    @On("callback_query")
-    async takeCallButtonHandler(@Ctx() ctx: SceneContext) {
-        const callbackQuery = (ctx.callbackQuery as any).data;
-        if (!callbackQuery.includes("BUTTON_TAKE_CALL_")) {
-            await ctx.answerCbQuery();
-            return;
-        }
-
-        const callId = parseInt(
-            callbackQuery.slice(callbackQuery.lastIndexOf("_") + 1)
-        );
-        const call = await this.supportService.getCallById(callId);
-
-        if (call == null) {
-            await ctx.answerCbQuery("Обращение уже обработано.");
-            return;
-        }
-        if (
-            (await this.supportService.getCallByManager(ctx.from.id)) !== null
-        ) {
-            await ctx.answerCbQuery("У вас уже есть обращение в обработке.");
-            return;
-        }
-        if (call.manager !== null) {
-            await ctx.answerCbQuery("Обращение уже в обработке.");
-            return;
-        }
-
-        await this.supportService.attachManagerToCall(ctx.from.id, callId);
-        await ctx.scene.enter(`SCENE_SUPPORT_MANAGER`);
+        await ctx.scene.enter(`SCENE_SUPPORT`);
     }
 }

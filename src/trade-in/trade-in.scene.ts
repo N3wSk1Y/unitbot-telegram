@@ -1,18 +1,18 @@
 import { Action, Ctx, Message, On, Scene, SceneEnter } from "nestjs-telegraf";
 import { Context } from "telegraf";
-import { BotService } from "../bot.service";
-import { Injectable } from "@nestjs/common";
+import { BotService } from "../bot/bot.service";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { SceneContext } from "telegraf/typings/scenes";
-import * as tradeInResponse from "./trade-in.response.json";
+import * as tradeInResponse from "./response/trade-in.response.json";
 import * as tt from "telegraf/src/telegram-types";
 import * as process from "process";
-import { CallType } from "../support/support-call.entity";
 import { SupportService } from "../support/support.service";
 
 @Scene("SCENE_TRADE_IN")
 @Injectable()
 export class TradeInScene {
     public constructor(
+        @Inject(forwardRef(() => BotService))
         private readonly botService: BotService,
         private readonly supportService: SupportService
     ) {}
@@ -41,8 +41,10 @@ ${message.text}`
             parse_mode: "HTML",
         });
         await ctx.scene.leave();
-        await this.supportService.createCall(ctx.from.id, CallType.TradeIn);
-        await ctx.scene.enter(`SCENE_SUPPORT_CLIENT`);
+        await this.supportService.sendUserMessage(ctx.from.id, {
+            text: "<b>Новое обращение в поддержку (Trade-In)\n<b>Информация об устройстве:</b>\n            \n${message.text}</b>",
+        });
+        await ctx.scene.enter(`SCENE_SUPPORT`);
     }
 
     @Action("BUTTON_MAIN_MENU")
