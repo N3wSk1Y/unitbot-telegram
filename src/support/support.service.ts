@@ -70,9 +70,10 @@ export class SupportService {
         if (await this.doesChatExist(id)) {
             return await this.getChatByUser(id);
         } else {
-            return await this.chatRepository.save({
+            await this.chatRepository.save({
                 target: user,
             });
+            return await this.getChatByUser(user.id)
         }
     }
 
