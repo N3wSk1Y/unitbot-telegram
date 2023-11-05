@@ -24,7 +24,9 @@ export class SupportService {
         return await this.chatRepository.find({
             relations: {
                 target: true,
-                messages: true,
+                messages: {
+                    author: true
+                },
             },
             order: {
                 messages: {
@@ -42,7 +44,9 @@ export class SupportService {
             },
             relations: {
                 target: true,
-                messages: true,
+                messages: {
+                    author: true
+                },
             },
             order: {
                 messages: {
@@ -60,7 +64,9 @@ export class SupportService {
             },
             relations: {
                 target: true,
-                messages: true,
+                messages: {
+                    author: true
+                },
             },
         });
     }
