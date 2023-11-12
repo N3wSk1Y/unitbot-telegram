@@ -29,27 +29,29 @@ export class SupportScene {
             }
         );
         if (message.photo) {
-            for (const photo of message.photo) {
-                const filePath = (await ctx.telegram.getFile(photo.file_id))
-                    .file_path;
-                const fileUrl = `https://api.telegram.org/file/bot${process.env.TELEGRAM_BOT_TOKEN}/${filePath}`;
-                const localFile = await this.localFileService.saveFileByUrl(
-                    fileUrl,
-                    "/support",
-                    "image/jpeg"
-                );
-                await this.supportService.addFileViaId(
-                    chatMessage.id,
-                    localFile.id
-                );
-                // TODO: break - чтобы было только одно фото
-                break;
-            }
+            console.log(message.photo);
+            const filePath = (
+                await ctx.telegram.getFile(
+                    message.photo[message.photo.length - 1].file_id
+                )
+            ).file_path;
+            const fileUrl = `https://api.telegram.org/file/bot${process.env.TELEGRAM_BOT_TOKEN}/${filePath}`;
+            console.log(fileUrl);
+            const localFile = await this.localFileService.saveFileByUrl(
+                fileUrl,
+                "/support",
+                "image/jpeg"
+            );
+            await this.supportService.addFileViaId(
+                chatMessage.id,
+                localFile.id
+            );
         }
     }
 
     @Action("BUTTON_QUIT_SUPPORT")
     async onCallFinish(@Ctx() ctx: SceneContext) {
+        await ctx.answerCbQuery();
         await ctx.reply("Вы вышли из чата с менеджером.");
         await ctx.scene.leave();
         await this.supportService.sendUserMessage(ctx.from.id, {
