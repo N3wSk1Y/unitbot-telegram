@@ -39,7 +39,7 @@ export class LocalFileService {
         const res = await axios.get(url, { responseType: "arraybuffer" });
         const mimetype = res.headers["content-type"] as string;
 
-        const fileName = path.basename(url);
+        const fileName = (Math.random() * 10000).toString();
         const localFilePath = path.join(localPath, fileName);
         const dir = path.join(localPath);
         if (!fsSync.existsSync(dir)) {
