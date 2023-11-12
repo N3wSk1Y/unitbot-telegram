@@ -48,7 +48,7 @@ export class LocalFileService {
         await fs.writeFile(localFilePath, res.data);
 
         const localFile = new LocalFile();
-        localFile.path = path.join(localPath, fileName);
+        localFile.path = path.join(localPath, "/files", fileName);
         localFile.fileName = fileName;
         localFile.mimetype = expectedMimetype;
 
