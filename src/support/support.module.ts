@@ -7,12 +7,14 @@ import { Message } from "./entities/message.entity";
 import { Chat } from "./entities/chat.entity";
 import { UserModule } from "../user/user.module";
 import { SupportScene } from "./support.scene";
+import { LocalFileModule } from "../local-file/local-file.module";
 
 @Module({
     imports: [
         forwardRef(() => BotModule),
         forwardRef(() => UserModule),
         TypeOrmModule.forFeature([Chat, Message]),
+        LocalFileModule,
     ],
     controllers: [SupportController],
     providers: [SupportService, SupportScene],

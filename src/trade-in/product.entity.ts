@@ -18,6 +18,12 @@ export class Product {
     @Column({
         type: "text",
     })
+    title: string;
+
+    @Column({
+        type: "text",
+        nullable: true,
+    })
     description: string;
 
     @Column({

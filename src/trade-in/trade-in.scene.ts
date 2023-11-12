@@ -42,7 +42,13 @@ ${message.text}`
         });
         await ctx.scene.leave();
         await this.supportService.sendUserMessage(ctx.from.id, {
-            text: `<b>Новое обращение в поддержку (Trade-In)</b>\nИнформация об устройстве:\n\n${message.text}`,
+            text: `
+<b>Заявка на Trade-In</b>
+======================
+            
+<b>Информация об устройстве:</b>
+            
+${message.text}`,
         });
         await ctx.scene.enter(`SCENE_SUPPORT`);
     }

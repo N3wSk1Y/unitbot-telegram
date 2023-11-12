@@ -1,8 +1,11 @@
-import { IsNumber, IsString, Length } from "class-validator";
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateProductDto {
     @IsString()
-    @Length(5)
+    title: string;
+
+    @IsString()
+    @IsOptional()
     description: string;
 
     @IsNumber()

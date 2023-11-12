@@ -6,6 +6,8 @@ import { BotService } from "../bot/bot.service";
 import { Chat } from "./entities/chat.entity";
 import { UserService } from "../user/user.service";
 import { MessageDto } from "./dto/message.dto";
+import { LocalFileDto } from "../local-file/dto/local-file.dto";
+import { LocalFileService } from "../local-file/local-file.service";
 
 @Injectable()
 export class SupportService {
@@ -17,7 +19,8 @@ export class SupportService {
         @Inject(forwardRef(() => BotService))
         private readonly botService: BotService,
         @Inject(forwardRef(() => UserService))
-        private readonly userService: UserService
+        private readonly userService: UserService,
+        private readonly localFileService: LocalFileService
     ) {}
 
     async getChats(): Promise<Chat[]> {
@@ -25,7 +28,8 @@ export class SupportService {
             relations: {
                 target: true,
                 messages: {
-                    author: true
+                    author: true,
+                    files: true,
                 },
             },
             order: {
@@ -45,13 +49,26 @@ export class SupportService {
             relations: {
                 target: true,
                 messages: {
-                    author: true
+                    author: true,
+                    files: true,
                 },
             },
             order: {
                 messages: {
                     date: "DESC",
                 },
+            },
+        });
+    }
+
+    async getMessageById(id: string): Promise<Message> {
+        return await this.messageRepository.findOne({
+            where: {
+                id: id,
+            },
+            relations: {
+                author: true,
+                files: true,
             },
         });
     }
@@ -65,7 +82,7 @@ export class SupportService {
             relations: {
                 target: true,
                 messages: {
-                    author: true
+                    author: true,
                 },
             },
         });
@@ -79,8 +96,22 @@ export class SupportService {
             await this.chatRepository.save({
                 target: user,
             });
-            return await this.getChatByUser(user.id)
+            return await this.getChatByUser(user.id);
         }
+    }
+
+    async addFile(messageId: string, fileData: LocalFileDto): Promise<Message> {
+        const message = await this.getMessageById(messageId);
+        const file = await this.localFileService.saveFile(fileData);
+        message.files.push(file);
+        return await this.messageRepository.save(message);
+    }
+
+    async addFileViaId(messageId: string, fileId: string): Promise<Message> {
+        const message = await this.getMessageById(messageId);
+        const file = await this.localFileService.getOne(fileId);
+        message.files.push(file);
+        return await this.messageRepository.save(message);
     }
 
     async sendManagerMessage(
@@ -106,14 +137,14 @@ ${messageData.text}
     async sendUserMessage(
         userId: number,
         messageData: MessageDto
-    ): Promise<void> {
+    ): Promise<Message> {
         const chat = await this.createChat(userId);
-        chat.messages.push(
-            await this.messageRepository.save({
-                text: messageData.text,
-                author: await this.userService.getOneByTelegramId(userId),
-            })
-        );
+        const message = await this.messageRepository.save({
+            text: messageData.text,
+            author: await this.userService.getOneByTelegramId(userId),
+        });
+        chat.messages.push(message);
         await this.chatRepository.save(chat);
+        return message;
     }
 }
