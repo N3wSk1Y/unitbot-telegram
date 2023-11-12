@@ -40,7 +40,7 @@ export class LocalFileService {
         const mimetype = res.headers["content-type"] as string;
 
         const fileName = (Math.random() * 10000).toString();
-        const localFilePath = path.join(localPath, fileName);
+        const localFilePath = path.join("/files", localPath, fileName);
         const dir = path.join(localPath);
         if (!fsSync.existsSync(dir)) {
             await fs.mkdir(dir);
