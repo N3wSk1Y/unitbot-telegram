@@ -50,7 +50,7 @@ export class LocalFileService {
         const localFile = new LocalFile();
         localFile.path = path.join(localPath, fileName);
         localFile.fileName = fileName;
-        localFile.mimetype = mimetype;
+        localFile.mimetype = expectedMimetype;
 
         return await this.localFileRepository.save(localFile);
     }
