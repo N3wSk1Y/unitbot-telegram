@@ -42,6 +42,8 @@ export class SupportScene {
                     chatMessage.id,
                     localFile.id
                 );
+                // TODO: break - чтобы было только одно фото
+                break;
             }
         }
     }

@@ -1,7 +1,7 @@
 import {
     Column,
     CreateDateColumn,
-    Entity,
+    Entity, JoinTable, ManyToMany,
     ManyToOne,
     PrimaryGeneratedColumn,
 } from "typeorm";
@@ -28,7 +28,8 @@ export class Message {
     })
     text: string;
 
-    @ManyToOne(() => LocalFile)
+    @ManyToMany(() => LocalFile)
+    @JoinTable()
     files: LocalFile[];
 
     @CreateDateColumn()
