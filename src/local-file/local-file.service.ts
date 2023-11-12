@@ -40,7 +40,7 @@ export class LocalFileService {
         const mimetype = res.headers["content-type"] as string;
 
         const fileName = (Math.random() * 10000).toString();
-        const localFilePath = path.join("../files", localPath, fileName);
+        const localFilePath = path.join(process.cwd(), localPath, fileName);
         const dir = path.join(localPath);
         if (!fsSync.existsSync(dir)) {
             await fs.mkdir(dir);
@@ -48,7 +48,7 @@ export class LocalFileService {
         await fs.writeFile(localFilePath, res.data);
 
         const localFile = new LocalFile();
-        localFile.path = path.join("/files", localPath, fileName);
+        localFile.path = path.join(localPath, fileName);
         localFile.fileName = fileName;
         localFile.mimetype = expectedMimetype;
 
