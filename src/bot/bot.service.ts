@@ -22,7 +22,11 @@ export class BotService {
         }
     }
 
-    async sendMessage(chatId: number, message: string, options?: any) {
+    async sendMessage(
+        chatId: number,
+        message: string,
+        options?: any
+    ): Promise<void> {
         if (options) {
             await this.bot.telegram.sendMessage(chatId, message, options);
         } else {
@@ -30,6 +34,10 @@ export class BotService {
                 parse_mode: "HTML",
             });
         }
+    }
+
+    async sendPhoto(chatId: number, photoPath: string): Promise<void> {
+        await this.bot.telegram.sendPhoto(chatId, { source: photoPath });
     }
 
     async copyMessage(chatId: number, fromChatId: number, messageId: number) {

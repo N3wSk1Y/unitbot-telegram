@@ -8,6 +8,7 @@ import { UserService } from "../user/user.service";
 import { MessageDto } from "./dto/message.dto";
 import { LocalFileDto } from "../local-file/dto/local-file.dto";
 import { LocalFileService } from "../local-file/local-file.service";
+import { LocalFile } from "../local-file/local-file.entity";
 
 @Injectable()
 export class SupportService {
@@ -119,17 +120,30 @@ export class SupportService {
         messageData: MessageDto
     ): Promise<void> {
         const chat = await this.createChat(targetId);
+        let files: LocalFile[] = [];
+        messageData.files =
+            messageData.files?.length > 0 ? messageData.files : [];
+        if (messageData.files.length > 0) {
+            for (const fileId of messageData.files) {
+                const localFile = await this.localFileService.getOne(fileId);
+                await this.botService.sendPhoto(targetId, localFile.path);
+                files.push(localFile);
+            }
+        }
+        if (messageData.text) {
+            await this.botService.sendMessage(
+                targetId,
+                `<b>Сообщение от менеджера</b>
+${messageData.text}
+`
+            );
+        }
         chat.messages.push(
             await this.messageRepository.save({
                 text: messageData.text,
-                author: await this.userService.getOneByTelegramId(5167143165),
+                author: await this.userService.getOneByTelegramId(5167143165), // ID аккаунта менеджера
+                files: files,
             })
-        );
-        await this.botService.sendMessage(
-            targetId,
-            `<b>Сообщение от менеджера</b>
-${messageData.text}
-`
         );
         await this.chatRepository.save(chat);
     }
