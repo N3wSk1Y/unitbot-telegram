@@ -1,6 +1,5 @@
 import {
     IsArray,
-    IsNotEmpty,
     IsOptional,
     IsString,
     IsUUID,
@@ -8,7 +7,6 @@ import {
 
 export class MessageDto {
     @IsString()
-    @IsNotEmpty()
     @IsOptional()
     text: string;
 
