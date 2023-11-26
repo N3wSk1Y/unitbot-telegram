@@ -11,6 +11,7 @@ import { Telegraf } from "telegraf";
 import { InjectBot } from "nestjs-telegraf";
 import * as process from "process";
 import { CheckoutDto } from "./dto/checkout.dto";
+import { LocalFile } from "../local-file/local-file.entity";
 
 @Injectable()
 export class TradeInService {
@@ -60,7 +61,21 @@ export class TradeInService {
     }
 
     async create(productData: CreateProductDto): Promise<Product> {
-        return await this.productRepository.save(productData);
+        let files: LocalFile[] = [];
+        productData.files =
+            productData.files?.length > 0 ? productData.files : [];
+        if (productData.files.length > 0) {
+            for (const fileId of productData.files) {
+                const localFile = await this.localFileService.getOne(fileId);
+                files.push(localFile);
+            }
+        }
+        return await this.productRepository.save({
+            title: productData.title,
+            description: productData.description,
+            category: productData.category,
+            files: files,
+        });
     }
 
     async addFile(productId: number, fileData: LocalFileDto): Promise<Product> {

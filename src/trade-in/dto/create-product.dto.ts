@@ -1,4 +1,10 @@
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import {
+    IsArray,
+    IsNumber,
+    IsOptional,
+    IsString,
+    IsUUID,
+} from "class-validator";
 
 export class CreateProductDto {
     @IsString()
@@ -10,4 +16,9 @@ export class CreateProductDto {
 
     @IsNumber()
     category: number;
+
+    @IsArray()
+    @IsUUID("all", { each: true })
+    @IsOptional()
+    files?: string[];
 }
