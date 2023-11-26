@@ -44,7 +44,7 @@ export class LocalFileController {
                 callback(null, true);
             },
             limits: {
-                fileSize: Math.pow(1024, 2) * 10, // 10MB
+                fileSize: Math.pow(1024, 2) * 100, // 100MB
             },
         })
     )
