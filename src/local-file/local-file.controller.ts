@@ -38,7 +38,10 @@ export class LocalFileController {
             fieldName: "file",
             path: "/common",
             fileFilter: (request, file, callback) => {
-                if (!file.mimetype.includes("image"))
+                if (
+                    !file.mimetype.includes("image") &&
+                    !file.mimetype.includes("video")
+                )
                     return callback(new Error("Provide a valid image"), false);
 
                 callback(null, true);
